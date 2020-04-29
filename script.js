@@ -4,11 +4,10 @@ const API_KEY = 'trnsl.1.1.20200427T212458Z.5ca8a39f3706f3d4.ddfbdc24691a7da9ca2
 
 let outputBox = $('#output-box');
 let translation;
-let input;
+let inputValue;
 let langsData;
 let getLangs;
 let chosenLanguage;
-let inputLanguage;
 let inputLanguageCode;
 let outputLanguageCode;
 
@@ -59,7 +58,7 @@ $('#button--translate').click(function(){
 
     if (translation[0].length < 1) {
       outputBox.html( errorMessage )
-    } else if ( translation == input ) messageAndReset()
+    } else if ( translation == inputValue ) messageAndReset()
     else outputBox.html( translation );
 
   })
@@ -68,6 +67,17 @@ $('#button--translate').click(function(){
   })
   
 })
+
+// erase choices on blur
+
+$('#input-box').on('blur', function() {
+  inputValue = $('#input-box').val();
+  if (inputValue.trim().length < 2) {
+    $('#input-box').val('')
+    $('#input-language-button').html('Input language')
+    $('#output-language-button').html('Output language')
+  }
+});
 
 function messageAndReset(){
   outputBox.html( 'Choose languages' )
@@ -85,23 +95,11 @@ function getLanguageCode(langsData, lang) {
 function getRequestURL(){
   let url = 'https://translate.yandex.net/api/v1.5/tr.json/translate';
 
-  input = $('#input-box').val().trim();
+  inputValue = $('#input-box').val().trim();
 
   url += '?key=' + API_KEY;
-  url += `&text=${input}`;
+  url += `&text=${inputValue}`;
   url += `&lang=${inputLanguageCode}-${outputLanguageCode}`; // translation direction
 
-  console.log(url)
   return url;
 }
-
-// erase choices on blur
-
-$('#input-box').on('blur', function() {
-  input = $('#input-box').val();
-  if (input.trim().length < 2) {
-    $('#input-box').val('')
-    $('#input-language-button').html('Input language')
-    $('#output-language-button').html('Output language')
-  }
-});
