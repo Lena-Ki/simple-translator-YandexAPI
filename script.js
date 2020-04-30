@@ -15,20 +15,20 @@ let outputLanguageCode;
 
 $(function(){
   fetch('/langs.json')
-    .then( response => { return response.json() } )
+    .then( response => response.json() )
     .then( data => {
       for (let code in data["langs"]) {
         let language = data["langs"][code];
         $('#input-language-dropdown').append(`<a class="dropdown-item input-language-item" href="#">${language}</a>`)
         $('#output-language-dropdown').append(`<a class="dropdown-item output-language-item" href="#">${language}</a>`)
       }
-      return langsData = data
+      return langsData = data["langs"]
     })
 });
 
 // choose input / output language
 
-$('body').on('click', '.input-language-item, .output-language-item', function(e){
+$('body').on('click', '.input-language-item, .output-language-item', e => {
   e.preventDefault();
 
   let thisListButton = $(event.target).closest('.dropdown').find('button')
@@ -44,33 +44,29 @@ $('body').on('click', '.input-language-item, .output-language-item', function(e)
 
 // get and set translation
 
-$('#button--translate').click(function(){
+$('#button--translate').click( () => {
   let url = getRequestURL();
 
-  if (inputLanguageCode == outputLanguageCode
-      || inputLanguageCode == undefined
-      || outputLanguageCode == undefined
-    ) messageAndReset()
+  if ( inputLanguageCode == outputLanguageCode
+    || inputLanguageCode == undefined
+    || outputLanguageCode == undefined
+     ) messageAndReset()
 
-  $.get( url, function(data) {
+  $.get( url, data => {
     translation = data.text;
     let errorMessage = `translation not found`
 
-    if (translation[0].length < 1) {
-      outputBox.html( errorMessage )
-    } else if ( translation == inputValue ) messageAndReset()
+    if (translation[0].length < 1) outputBox.html(errorMessage)
+    else if (translation == inputValue) messageAndReset()
     else outputBox.html( translation );
+  })
+  .fail( () => console.log(`An error occured`) )
 
-  })
-  .fail(function(){
-    console.log(`An error occured`)
-  })
-  
 })
 
 // erase choices on blur
 
-$('#input-box').on('blur', function() {
+$('#input-box').on('blur', () => {
   inputValue = $('#input-box').val();
   if (inputValue.trim().length < 2) {
     $('#input-box').val('')
@@ -86,8 +82,8 @@ function messageAndReset(){
 }
 
 function getLanguageCode(langsData, lang) {
-  for ( let key in langsData["langs"] ){
-    if ( langsData["langs"][key].includes(lang) ) return key;
+  for ( let key in langsData ) {
+    if ( langsData[key] == lang ) return key;
   }
   return null;
 }
