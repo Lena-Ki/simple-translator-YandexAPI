@@ -3,7 +3,6 @@
 const API_KEY = 'trnsl.1.1.20200427T212458Z.5ca8a39f3706f3d4.ddfbdc24691a7da9ca28b71526896f5b66ab3539';
 
 let outputBox = $('#output-box');
-let translation;
 let inputValue;
 let langsData;
 let getLangs;
@@ -17,10 +16,9 @@ $(function(){
   fetch('/langs.json')
     .then( response => response.json() )
     .then( data => {
-      for (let code in data["langs"]) {
-        let language = data["langs"][code];
-        $('#input-language-dropdown').append(`<a class="dropdown-item input-language-item" href="#">${language}</a>`)
-        $('#output-language-dropdown').append(`<a class="dropdown-item output-language-item" href="#">${language}</a>`)
+      for (let [ , value] of Object.entries( data["langs"] )) {
+        $('#input-language-dropdown').append(`<a class="dropdown-item input-language-item" href="#">${value}</a>`)
+        $('#output-language-dropdown').append(`<a class="dropdown-item output-language-item" href="#">${value}</a>`)
       }
       return langsData = data["langs"]
     })
@@ -53,12 +51,12 @@ $('#button--translate').click( () => {
      ) messageAndReset()
 
   $.get( url, data => {
-    translation = data.text;
+    let {text} = data;
     let errorMessage = `translation not found`
 
-    if (translation[0].length < 1) outputBox.html(errorMessage)
-    else if (translation == inputValue) messageAndReset()
-    else outputBox.html( translation );
+    if (text[0].length < 1) outputBox.html(errorMessage)
+    else if (text == inputValue) messageAndReset()
+    else outputBox.html( text );
   })
   .fail( () => console.log(`An error occured`) )
 
@@ -82,8 +80,8 @@ function messageAndReset(){
 }
 
 function getLanguageCode(langsData, lang) {
-  for ( let key in langsData ) {
-    if ( langsData[key] == lang ) return key;
+  for ( let [key, value] of Object.entries(langsData) ) {
+    if ( value == lang ) return key;
   }
   return null;
 }
