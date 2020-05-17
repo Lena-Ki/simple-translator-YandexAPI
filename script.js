@@ -12,7 +12,7 @@ let outputLanguageCode;
 
 // get languages list
 
-$(function(){
+$(() => {
   fetch('/langs.json')
     .then( response => response.json() )
     .then( data => {
@@ -50,15 +50,21 @@ $('#button--translate').click( () => {
     || outputLanguageCode == undefined
      ) messageAndReset()
 
-  $.get( url, data => {
+  $.get( url )
+  .done( data => {
     let {text} = data;
     let errorMessage = `translation not found`
 
     if (text[0].length < 1) outputBox.html(errorMessage)
     else if (text == inputValue) messageAndReset()
     else outputBox.html( text );
+
+    return data
   })
-  .fail( () => console.log(`An error occured`) )
+  .fail( data => {
+    let {message} = data.responseJSON;
+    console.log(`An error occured: ${message}`) 
+  })
 
 })
 
