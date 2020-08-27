@@ -13,7 +13,11 @@ let outputLanguageCode;
 // get languages list
 
 $(() => {
-  fetch('/langs.json')
+  fetch('/langs.json', {
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8'
+    },
+  })
     .then( response => response.json() )
     .then( data => {
       for (let [ , value] of Object.entries( data["langs"] )) {
